@@ -32,6 +32,13 @@ namespace CodePulse.API
 
             app.UseHttpsRedirection();
 
+            app.UseCors(options =>
+            {
+                options.AllowAnyHeader();
+                options.AllowAnyMethod();
+                options.AllowAnyMethod();
+            });
+
             app.UseAuthorization();
 
             app.MapControllers();
