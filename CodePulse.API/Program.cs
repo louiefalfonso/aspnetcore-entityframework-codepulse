@@ -1,5 +1,7 @@
 
 using CodePulse.API.Data;
+using CodePulse.API.Repositories.Implementation;
+using CodePulse.API.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
 
 namespace CodePulse.API
@@ -10,10 +12,15 @@ namespace CodePulse.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container
+            // Add services to add controllers
             builder.Services.AddControllers();
-            builder.Services.AddOpenApi();
+
+            // Add & Configure API endpoints
+            builder.Services.AddEndpointsApiExplorer();
+
+            // Add & Configure Swagger
             builder.Services.AddSwaggerGen();
+
 
             // inject DbContect Into Application
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -21,25 +28,23 @@ namespace CodePulse.API
                 options.UseSqlServer(builder.Configuration.GetConnectionString("CodePulseConnectionString"));
             });
 
+            // inject repository into Application
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
-                app.UseSwagger();
+               app.UseSwagger();
+               app.UseSwaggerUI( c =>
+               {
+                   c.SwaggerEndpoint("swagger/v1/swagger.json", "API V1");
+                   c.RoutePrefix = string.Empty;
+               });
             }
 
             app.UseHttpsRedirection();
-
-            app.UseCors(options =>
-            {
-                options.AllowAnyHeader();
-                options.AllowAnyMethod();
-                options.AllowAnyMethod();
-            });
-
-            app.UseAuthorization();
 
             app.MapControllers();
 
