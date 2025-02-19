@@ -46,6 +46,14 @@ namespace CodePulse.API
 
             app.UseHttpsRedirection();
 
+            // Add & Setup CORS Policy
+            app.UseCors(options =>
+            {
+                options.AllowAnyHeader();
+                options.AllowAnyOrigin();
+                options.AllowAnyMethod();
+            });
+
             app.MapControllers();
 
             app.Run();
