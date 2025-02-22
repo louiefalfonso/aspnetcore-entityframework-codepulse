@@ -3,7 +3,7 @@ using CodePulse.API.Models.Domain;
 using CodePulse.API.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
 
-namespace CodePulse.API.Repositories.Implementation
+namespace CodePulse.API.Repositories.Interface
 {
     public class CategoryRepository : ICategoryRepository
     {
