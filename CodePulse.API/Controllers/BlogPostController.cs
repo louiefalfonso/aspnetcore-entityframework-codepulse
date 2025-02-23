@@ -1,5 +1,6 @@
 ﻿using CodePulse.API.Models.Domain;
 using CodePulse.API.Models.DTO;
+using CodePulse.API.Repositories.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +10,12 @@ namespace CodePulse.API.Controllers
     [ApiController]
     public class BlogPostController : ControllerBase
     {
+        private readonly IBlogPostRepository blogPostRepository;
+
+        public BlogPostController(IBlogPostRepository blogPostRepository)
+        {
+            this.blogPostRepository = blogPostRepository;
+        }
 
         // add new blog post
         [HttpPost]
@@ -26,6 +33,26 @@ namespace CodePulse.API.Controllers
                Author = request.Author,
                IsVisible = request.IsVisible
             };
+
+            // add new blog post
+            blogPost = await blogPostRepository.CreateAsync(blogPost);
+
+            // Convert Domain Model to DTO
+            var response = new BlogPostDto
+            {
+                Id = blogPost.Id,
+                Title = blogPost.Title,
+                ShortDescription = blogPost.ShortDescription,
+                Content = blogPost.Content,
+                FeaturedImageUrl = blogPost.FeaturedImageUrl,
+                UrlHandle = blogPost.UrlHandle,
+                PublishedDate = blogPost.PublishedDate,
+                Author = blogPost.Author,
+                IsVisible = blogPost.IsVisible
+            };
+
+
+            return Ok(response);
 
 
         }

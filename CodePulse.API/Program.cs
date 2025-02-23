@@ -12,7 +12,7 @@ namespace CodePulse.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to add controllers
+            // Add services for controllers
             builder.Services.AddControllers();
 
             // Add & Configure API endpoints
@@ -30,6 +30,7 @@ namespace CodePulse.API
 
             // inject repository into Application
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
 
             var app = builder.Build();
 
