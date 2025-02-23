@@ -1,7 +1,6 @@
 
 using CodePulse.API.Data;
 using CodePulse.API.Repositories.Interface;
-using CodePulse.API.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
 
 namespace CodePulse.API

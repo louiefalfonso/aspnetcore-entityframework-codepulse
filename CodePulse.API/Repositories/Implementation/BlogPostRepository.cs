@@ -14,12 +14,19 @@ namespace CodePulse.API.Repositories.Interface
             this.dbContext = dbContext;
         }
 
-        // add new blog post
+        // Add New Blog Post
         public async Task<BlogPost> CreateAsync(BlogPost blogPost)
         {
             await dbContext.BlogPosts.AddAsync(blogPost);
             await dbContext.SaveChangesAsync();
             return blogPost;
         }
+
+        // Get All Blog Posts
+        public async Task<IEnumerable<BlogPost>> GetAllAsync()
+        {
+            return await dbContext.BlogPosts.ToListAsync();
+        }
+
     }
 }
