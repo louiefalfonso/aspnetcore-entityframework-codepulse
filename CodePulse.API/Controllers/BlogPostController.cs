@@ -8,13 +8,15 @@ namespace CodePulse.API.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class BlogPostController : ControllerBase
+    public class BlogPostsController : ControllerBase
     {
         private readonly IBlogPostRepository blogPostRepository;
+        private readonly ICategoryRepository categoryRepository;
 
-        public BlogPostController(IBlogPostRepository blogPostRepository)
+        public BlogPostsController(IBlogPostRepository blogPostRepository, ICategoryRepository categoryRepository)
         {
             this.blogPostRepository = blogPostRepository;
+            this.categoryRepository = categoryRepository;
         }
 
         // Add New Blog Post
@@ -24,15 +26,29 @@ namespace CodePulse.API.Controllers
             // convert DTO to Domain Model
             var blogPost = new BlogPost
             {
-               Title = request.Title,
-               ShortDescription = request.ShortDescription,
-               Content = request.Content,
-               FeaturedImageUrl = request.FeaturedImageUrl,
-               UrlHandle = request.UrlHandle,
-               PublishedDate = request.PublishedDate,
-               Author = request.Author,
-               IsVisible = request.IsVisible
+                Title = request.Title,
+                ShortDescription = request.ShortDescription,
+                Content = request.Content,
+                FeaturedImageUrl = request.FeaturedImageUrl,
+                UrlHandle = request.UrlHandle,
+                PublishedDate = request.PublishedDate,
+                Author = request.Author,
+                IsVisible = request.IsVisible,
+                Categories = new List<Category>()
             };
+
+            // add categories to blog post
+            foreach (var categoryGuid in request.Categories)
+            {
+                // get category by id
+                var existingCategory = await categoryRepository.GetByIdAsync(categoryGuid);
+
+                // check if category exists
+                if (existingCategory is not null)
+                {
+                    blogPost.Categories.Add(existingCategory);
+                }
+            }
 
             // add new blog post
             blogPost = await blogPostRepository.CreateAsync(blogPost);
@@ -48,12 +64,11 @@ namespace CodePulse.API.Controllers
                 UrlHandle = blogPost.UrlHandle,
                 PublishedDate = blogPost.PublishedDate,
                 Author = blogPost.Author,
-                IsVisible = blogPost.IsVisible
+                IsVisible = blogPost.IsVisible,
+                Categories = blogPost.Categories.Select(x => new CategoryDto { Id = x.Id, Name = x.Name, UrlHandle = x.UrlHandle }).ToList()
             };
 
-
             return Ok(response);
-
 
         }
 
@@ -75,15 +90,46 @@ namespace CodePulse.API.Controllers
                     ShortDescription = blogPost.ShortDescription,
                     Content = blogPost.Content,
                     FeaturedImageUrl = blogPost.FeaturedImageUrl,
-                    UrlHandle = blogPost.UrlHandle,
                     PublishedDate = blogPost.PublishedDate,
                     Author = blogPost.Author,
-                    IsVisible = blogPost.IsVisible
+                    IsVisible = blogPost.IsVisible,
+                    Categories = blogPost.Categories.Select(x => new CategoryDto { Id = x.Id, Name = x.Name, UrlHandle = x.UrlHandle }).ToList()
+
                 });
             }
 
             return Ok(response);
 
+        }
+
+        // Get Blog Post by ID
+        [HttpGet]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> GetBlogPostById([FromRoute] Guid id)
+        {
+            // get blog post by id
+            var blogPost = await blogPostRepository.GetByIdAsync(id);
+
+            // check if blog post is null
+            if (blogPost == null)
+            {
+                return NotFound();
+            }
+
+            // map Domain model to DTO
+            var response = new BlogPostDto
+            {
+                Id = blogPost.Id,
+                Title = blogPost.Title,
+                ShortDescription = blogPost.ShortDescription,
+                Content = blogPost.Content,
+                FeaturedImageUrl = blogPost.FeaturedImageUrl,
+                UrlHandle = blogPost.UrlHandle,
+                PublishedDate = blogPost.PublishedDate,
+                Author = blogPost.Author,
+                IsVisible = blogPost.IsVisible
+            };
+            return Ok(response);
         }
     }
 }

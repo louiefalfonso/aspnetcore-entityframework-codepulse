@@ -25,7 +25,13 @@ namespace CodePulse.API.Repositories.Interface
         // Get All Blog Posts
         public async Task<IEnumerable<BlogPost>> GetAllAsync()
         {
-            return await dbContext.BlogPosts.ToListAsync();
+            return await dbContext.BlogPosts.Include(x => x.Categories).ToListAsync();
+        }
+
+        // Get Blog Post by ID
+        public async Task<BlogPost?> GetByIdAsync(Guid id)
+        {
+            return await dbContext.BlogPosts.FirstOrDefaultAsync(x => x.Id == id);
         }
 
     }
