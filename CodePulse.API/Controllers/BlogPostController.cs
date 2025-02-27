@@ -234,7 +234,7 @@ namespace CodePulse.API.Controllers
         {
             var deletedBlogPost = await blogPostRepository.DeleteAsync(id);
 
-            if (deletedBlogPost != null)
+            if (deletedBlogPost == null)
             {
                 return NotFound();
             }
