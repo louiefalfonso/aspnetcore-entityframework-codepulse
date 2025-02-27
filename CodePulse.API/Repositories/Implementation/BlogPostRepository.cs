@@ -43,6 +43,7 @@ namespace CodePulse.API.Repositories.Interface
         // Update Blog Post
         public async Task<BlogPost?> UpdateAsync(BlogPost blogPost)
         {
+            // fetch the blog post using ID
             var existingBlogPost = await dbContext.BlogPosts.Include(x => x.Categories).FirstOrDefaultAsync(x => x.Id == blogPost.Id);
 
             if (existingBlogPost == null)

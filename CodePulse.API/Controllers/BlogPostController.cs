@@ -91,6 +91,7 @@ namespace CodePulse.API.Controllers
                     ShortDescription = blogPost.ShortDescription,
                     Content = blogPost.Content,
                     FeaturedImageUrl = blogPost.FeaturedImageUrl,
+                    UrlHandle = blogPost.UrlHandle,
                     PublishedDate = blogPost.PublishedDate,
                     Author = blogPost.Author,
                     IsVisible = blogPost.IsVisible,
@@ -169,11 +170,13 @@ namespace CodePulse.API.Controllers
         // Update Blog Post
         [HttpPut]
         [Route("{id:Guid}")]
-        public async Task<IActionResult> UpdateBlogPost(Guid id, UpdateBlogPostRequestDto request)
+        public async Task<IActionResult> UpdateBlogPost([FromRoute] Guid id, UpdateBlogPostRequestDto request)
         {
             // convert DTO to Domain Model
             var blogPost = new BlogPost
+
             {
+                Id = id,
                 Title = request.Title,
                 ShortDescription = request.ShortDescription,
                 Content = request.Content,
@@ -188,7 +191,7 @@ namespace CodePulse.API.Controllers
             // add categories to blog post
             foreach (var categoryGuid in request.Categories)
             {
-                // get category by id
+                // get category by id from category repository
                 var existingCategory = await categoryRepository.GetByIdAsync(categoryGuid);
 
                 // check if category exists
@@ -201,7 +204,7 @@ namespace CodePulse.API.Controllers
             // call repository to update BlogPost Domain Model
             var updatedBlogPost = await blogPostRepository.UpdateAsync(blogPost);
 
-            if (updatedBlogPost != null)
+            if (updatedBlogPost == null)
             {
                 return NotFound();
             }
