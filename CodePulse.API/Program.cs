@@ -1,7 +1,9 @@
 
 using CodePulse.API.Data;
+using CodePulse.API.Repositories.Implementation;
 using CodePulse.API.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 
 namespace CodePulse.API
 {
@@ -13,6 +15,9 @@ namespace CodePulse.API
 
             // Add services for controllers
             builder.Services.AddControllers();
+
+            // add http context accessor
+            builder.Services.AddHttpContextAccessor();
 
             // Add & Configure API endpoints
             builder.Services.AddEndpointsApiExplorer();
@@ -30,6 +35,7 @@ namespace CodePulse.API
             // inject repository into Application
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
+            builder.Services.AddScoped<IImageRepository, ImageRepository>();
 
             var app = builder.Build();
 
@@ -52,6 +58,12 @@ namespace CodePulse.API
                 options.AllowAnyHeader();
                 options.AllowAnyOrigin();
                 options.AllowAnyMethod();
+            });
+
+            // enable serve static images from API
+            app.UseStaticFiles(new StaticFileOptions {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Images")),
+                RequestPath = "/Images"
             });
 
             app.MapControllers();

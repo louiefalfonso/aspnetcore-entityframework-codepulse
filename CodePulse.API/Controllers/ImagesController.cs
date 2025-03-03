@@ -19,10 +19,8 @@ namespace CodePulse.API.Controllers
 
         // upload image
         [HttpPost]
-        public async Task<IActionResult> UploadImage(
-            [FromForm] IFormFile file, 
-            [FromForm] string fileName, 
-            [FromForm] string title)
+        public async Task<IActionResult> UploadImage( IFormFile file,
+            [FromForm] string fileName, [FromForm] string title)
         {
             ValidateFileUpload(file);
 
