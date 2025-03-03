@@ -66,6 +66,29 @@ namespace CodePulse.API.Controllers
                 ModelState.AddModelError("file", "File Size Cannot Be More Than 10MB");
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllImages()
+        {
+            // call image repository to gel all images
+            var images = await imageRepository.GetAllImages();
+
+            // convert Domain Model to DTO
+            var response = new List<BlogImageDto>();
+            foreach (var image in images)
+            {
+                response.Add(new BlogImageDto
+                {
+                    Id = image.Id,
+                    Title = image.Title,
+                    DateCreated = image.DateCreated,
+                    FileExtension = image.FileExtension,
+                    FileName = image.FileName,
+                    Url = image.Url
+                });
+            }
+            return Ok(response);
+        }
         
     }
 }

@@ -19,6 +19,7 @@ namespace CodePulse.API.Repositories.Implementation
         }
 
 
+
         // upload image
         public async Task<BlogImage> Upload(IFormFile file, BlogImage blogImage)
         {
@@ -37,6 +38,13 @@ namespace CodePulse.API.Repositories.Implementation
           await dbContext.BlogImages.AddAsync(blogImage);
           await dbContext.SaveChangesAsync();
           return blogImage;
+        }
+
+
+        // get all images
+        public async Task<IEnumerable<BlogImage>> GetAllImages()
+        {
+            return await dbContext.BlogImages.ToListAsync();
         }
     }
 }
