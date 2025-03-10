@@ -34,12 +34,6 @@ namespace CodePulse.API.Repositories.Interface
             return await dbContext.BlogPosts.Include(x => x.Categories).FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        // Get Blog Post By Url Handle
-        public async Task<BlogPost?> GetByUrlHandleAsync(string urlHandle)
-        {
-            return await dbContext.BlogPosts.Include(x => x.Categories).FirstOrDefaultAsync(x => x.UrlHandle == urlHandle);
-        }
-
         // Update Blog Post
         public async Task<BlogPost?> UpdateAsync(BlogPost blogPost)
         {
@@ -77,6 +71,12 @@ namespace CodePulse.API.Repositories.Interface
             return null;
         }
 
-      
+        // Get Blog Post By Url Handle
+        public async Task<BlogPost?> GetByUrlHandleAsync(string urlHandle)
+        {
+            return await dbContext.BlogPosts.Include(x => x.Categories).FirstOrDefaultAsync(x => x.UrlHandle == urlHandle);
+        }
+
+
     }
 }
