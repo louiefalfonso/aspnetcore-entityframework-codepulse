@@ -140,7 +140,7 @@ namespace CodePulse.API.Controllers
         [Route("{urlHandle}")]
         public async Task<IActionResult> GetBlogPostByUrlHandle([FromRoute] string urlHandle)
         {
-            // get blog post from repository
+            // get blog post details from repository
             var blogPost = await blogPostRepository.GetByUrlHandleAsync(urlHandle);
 
             if (blogPost == null)
