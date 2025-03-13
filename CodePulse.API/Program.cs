@@ -5,6 +5,7 @@ using CodePulse.API.Repositories.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 
@@ -28,22 +29,27 @@ namespace CodePulse.API
             // Add & Configure Swagger
             builder.Services.AddSwaggerGen();
 
-            // inject Auth DbContext Into Application
-            builder.Services.AddDbContext<AuthDbContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("CodePulseConnectionString"));
-            });
-
             // inject DbContect Into Application
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("CodePulseConnectionString"));
             });
 
+            // inject Auth DbContext Into Application
+            builder.Services.AddDbContext<AuthDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("CodePulseConnectionString"));
+
+                //  add this if Migration error occurs before updating database for AuthDbContext
+                options.ConfigureWarnings(warnings =>warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
+            });
+
+
             // inject repository into Application
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
             builder.Services.AddScoped<IImageRepository, ImageRepository>();
+            builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 
             // inject Identity Core
             builder.Services.AddIdentityCore<IdentityUser>()
